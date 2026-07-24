@@ -1,0 +1,155 @@
+Carrie Feng
+Hi Joy Zheng, the proposal has been modified in the shared file, as for the wealth projection, should we include 95th as well or just keep median and 5th? 📄 📄
+Updated with 95th value
+ 
+Thanks! I will finish the tax transition section Monday. 
+ 
+this seems to be an interesting tool for task management, but need to be careful for the client information in teams. 
+ 
+Joy Zheng
+FrontierOne-main-new.zip
+ 
+Helen Luo The proposal is close to be ready. We should add footnote to explain some field, such as Annual tax cost. It's basically tax on the dividend. Can you read through and add necessary foot notes? 
+ 
+Household optimization demo is working. Thanks Carrie!
+ 
+Nice!
+ 
+Helen Luo: I remember you showing us the results of the account size vs. TE study you did. Are those the files in your temp folder at "O:\temp\Helen\account size and tracking error"?
+ 
+I think so. If it’s not there, I’ll put it tomorrow
+ 
+For the Mark proposal"
+Remove the wealth dispersion over time, unless the client requested it. If the client requested the wealth dispersion chart, show only the median and lower bound. The resoning is that this is redundant with the scenario downside chart
+Fix: Portfolio comparison table should have consistent decimal places
+Question
+Why is expense ratio 10bp on portfolio comparison slide and 5bp on household comparison slide?
+We had the expected return from Aladdin. Can you give us a table for internal purposes of that compared to ours?
+ 
+Here's a quick mockup demo for tax monitoring and management, discussed from yesterday. I want it to be simple and easy to understand. While I won't be designing the UI, I just wanted to show what information should be dislayed. Every data point is relatively easy to pull from Orion API. Tax Transition Progress is defined as : 1- Current Tracking error / Starting tracking error
+This mock cost 60 credits btw
+ 
+frontierone_tax_monitoring_mockup_v5.html
+ 
+Using W50(10y)=W0(1+g)^10, g = W50/W0^1/10 - 1, g to be expected return
+Get g_Tax ~ 6.31\% , g_Global ~ 6.77\%, g_Brosnahan ~ 6.15\%
+Simulate with lognormal returns:
+$log(\frac{W_t}{W_{t-dt}}) \sim Normal(log(1 + geometric\_return) * dt, annual\_risk * \sqrt{(dt)})$
+Got result: (Tried with different seed and num of simulation, all results are within this range.)
+ 
+Portfolio	Inferred geometric return	Annual risk	Simulated 5th	Reported 5th	Simulated median	Reported median	Simulated 95th	Reported 95th
+New Frontier ETF Balanced Tax-Sensitive	6.31%	11.48%	$3,741,364	$3,700,000	$6,805,970	$6,800,000	$12,364,742	$12,300,000
+New Frontier ETF Global Balanced Growth	6.77%	13.39%	$3,549,854	$3,500,000	$7,107,750	$7,100,000	$14,291,291	$14,200,000
+Brosnahan Household Combined	6.15%	17.40%	$2,708,179	$2,700,000	$6,706,163	$6,700,000	$16,619,646	$16,500,000
+Apply the same simulation method on our risk and return:
+Portfolio	5th percentile	Median	95th percentile	return	risk
+Current Portfolio	$3.96M	$8.50M	$18.21M	8.69%	14.66%
+New Frontier Portfolio	$4.49M	$7.79M	$13.55M	7.75%	10.62%
+Using the starting point sheet of blackrock-capital-market-assumptions.xlsx and blackrock asset classification(from proposal), get weighted sum of expected return
+Portfolio	5 year	7 year	10 year
+NFA Balanced Tax-Sensitive	6.61%	6.74%	6.81%
+NFA Global Balanced Growth	7.12%	7.22%	7.33%
+Brosnahan Household Combined	8.54%	8.36%	8.31%
+Which is still different from the inferred results, but close to ours. So probably they added more detailed look-through mapping, or penalty on correlation and concentration, or any other scopes.
+ 
+For example, I tried risk-adjusted expected return = base CMA return - 2.5% × asset class HHI can get a close number with the inferred return above, but I don't think they are calculating like this. 
+ 
+Inferred geometric return is from Blackrock. Can you list our risk/return for TAX 60/40, STD 75/25 and the client household so we can see apple to apple comparion?
+ 
+ 
+ 
+Portfolio	
+return-F1
+	inferred return-B	
+risk-F1
+	risk-B
+NFA Balanced Tax-Sensitive	6.72%	6.31%	8.94%	11.48%
+NFA Global Balanced Growth	8.67%	6.77%	12.15%	13.39%
+Brosnahan Household Combined	8.69%	6.15%	14.66%	17.40%
+Here are the risk and returns
+ 
+Thank you Carrie!
+ 
+Blue line is replaced with shuttle bus. ETA 10am
+ 
+Sorry new eta 10:15
+ 
+Ok, let's start then
+ 
+Let’s meet now
+ 
+Here's the prompt from the client. Drop it into a chat and have it analyze what it will accomplish.
+How to export / import memories
+ChatGPT Memory Migration (Business → Enterprise)
+We’re migrating workspaces. Before reprovisioning, please export your ChatGPT “memory” so your context carries over.
+Step 1: Export your memory
+Open ChatGPT (current workspace) → new chat → paste this:
+I am migrating to a new ChatGPT workspace and need a clean, structured memory export that is ready for re-import in batches.
+Please extract everything you remember about me and my work that is useful to preserve.
+IMPORTANT INSTRUCTIONS:
+- Only include durable, useful context (preferences, role, projects, workflows)
+- Remove anything outdated, redundant, trivial, or uncertain
+- Avoid sensitive information unless necessary for work
+- Deduplicate similar items
+- Keep each memory short, clear, and standalone
+OUTPUT FORMAT:
+SECTION 1 — HUMAN SUMMARY
+A clean bulleted summary grouped into:
+- Role & Context
+- Projects
+- Preferences
+- Work Style
+- Other Useful Context
+SECTION 2 — BATCHED RE-IMPORT FILE
+Create a structured file formatted EXACTLY like this:
+### BATCH 1
+1. Remember that ...
+2. Remember that ...
+(10–15 items)
+### BATCH 2
+1. Remember that ...
+(10–15 items)
+Continue creating batches until all memories are included.
+RULES FOR BATCHES:
+- Each batch must contain 10–15 items (not more, not less unless final batch)
+- Each line must start with: "Remember that ..."
+- Each item must be atomic (one idea per line)
+- Do NOT repeat information across batches
+- Do NOT include explanations or commentary
+SECTION 3 — REVIEW FLAGS
+List anything that:
+- Might be outdated
+- Might be sensitive
+- Needs human review before re-import
+Step 2: Save + review
+Copy output into a doc
+Remove outdated / duplicate / sensitive items
+Keep this file — you’ll use it to re-upload
+
+
+Step 3: Re-import into the new Enterprise workspace
+Once you have access to the new workspace:
+1. Open ChatGPT → start a new chat
+2. Paste this first:
+I'm going to give you a set of things to remember in multiple batches. Please confirm after each batch what you've saved.
+3. Copy BATCH 1 from your file → paste it
+4. Ask:
+What do you remember about me?
+5. Confirm it looks correct
+6. Repeat for:
+BATCH 2
+BATCH 3
+etc.
+Fixing issues:
+If something is wrong:
+Forget that [incorrect memory]
+Then paste the corrected version
+Final check:
+After all batches:
+What do you remember about me?
+Save your file as a backup in case you need to re-seed later.
+ 
+1.) export all chat history 2.) have ChatGPT "refine" that raw chat history 3.) reupload that to new account
+ 
+1.) have the chat itself generate a markdown/summary/batch file 2.) upload that to new account
+ 

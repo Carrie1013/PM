@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PM Operations Dashboard</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Private Internal PM System</p>
+          <h1>PM Operations Dashboard</h1>
+          <p class="hero-copy">
+            Monitor team workload, confirm extracted work, distribute assignments,
+            and preserve durable project memory in one place.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <button id="refreshButton">Refresh Dashboard</button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="panel panel-wide">
+          <div class="panel-header">
+            <div>
+              <h2>Daily Summary</h2>
+              <p id="summaryDate">Generated for 2026-07-24</p>
+            </div>
+            <div id="summaryCards" class="summary-cards"></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>PM Review Inbox</h2>
+              <p>Confirm, reject, or route new extracted work.</p>
+            </div>
+          </div>
+          <div id="reviewInbox" class="stack"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Capacity Board</h2>
+              <p>See who is overloaded, underloaded, or blocked.</p>
+            </div>
+          </div>
+          <div id="capacityBoard" class="stack"></div>
+        </section>
+
+        <section class="panel panel-wide">
+          <div class="panel-header">
+            <div>
+              <h2>Team TODO Board</h2>
+              <p>Confirmed tasks grouped by owner with priority and due dates.</p>
+            </div>
+          </div>
+          <div id="todoBoard" class="todo-grid"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Project Progress</h2>
+              <p>Current execution state across tracked projects.</p>
+            </div>
+          </div>
+          <div id="projectProgress" class="stack"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Shared Calendar</h2>
+              <p>Visible work plan across the team.</p>
+            </div>
+          </div>
+          <div id="calendarEntries" class="stack"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Add Daily Log</h2>
+              <p>Capture oral updates and progress notes.</p>
+            </div>
+          </div>
+          <form id="logForm" class="stack form-stack">
+            <select id="logAuthor"></select>
+            <textarea id="logSummary" rows="4" placeholder="What changed today?"></textarea>
+            <button type="submit">Save Daily Log</button>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Add Memory</h2>
+              <p>Store durable facts instead of burying them in chat.</p>
+            </div>
+          </div>
+          <form id="memoryForm" class="stack form-stack">
+            <select id="memoryScope">
+              <option value="team">Team</option>
+              <option value="project">Project</option>
+              <option value="person">Person</option>
+            </select>
+            <textarea id="memoryFact" rows="4" placeholder="Remember that ..."></textarea>
+            <button type="submit">Save Memory</button>
+          </form>
+        </section>
+
+        <section class="panel panel-wide">
+          <div class="panel-header">
+            <div>
+              <h2>Daily Digest</h2>
+              <p>What the PM should notice right now.</p>
+            </div>
+          </div>
+          <div id="digestPanel" class="digest-grid"></div>
+        </section>
+      </main>
+    </div>
+
+    <template id="reviewItemTemplate">
+      <article class="card review-card">
+        <div class="card-top">
+          <span class="chip chip-warning">Pending review</span>
+          <span class="muted confidence"></span>
+        </div>
+        <h3 class="title"></h3>
+        <p class="description"></p>
+        <dl class="meta-grid">
+          <div><dt>Suggested owner</dt><dd class="owner"></dd></div>
+          <div><dt>Priority</dt><dd class="priority"></dd></div>
+          <div><dt>Due</dt><dd class="due"></dd></div>
+          <div><dt>Source</dt><dd class="source"></dd></div>
+        </dl>
+        <div class="card-actions">
+          <button class="confirm">Confirm</button>
+          <button class="reject secondary">Reject</button>
+        </div>
+      </article>
+    </template>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+  </html>

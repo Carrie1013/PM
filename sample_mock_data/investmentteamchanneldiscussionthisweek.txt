@@ -1,0 +1,72 @@
+Joy Zheng
+Wednesday 11:43 AM
+IVVW Strategy Update
+Effective around September 17, 2026, IVVW will change from a single monthly covered-call position to four equal, staggered weekly FLEX option tranches. Each week, one 25% tranche will be rolled into a new four-week SPX call, generally struck at 101% of SPX’s closing level on the roll date.
+ 
+Why the change
+The new structure reduces dependence on a single monthly roll date. Premiums and strike levels will be established across four different weeks, which should make the strategy less exposed to one poorly timed roll and create a more gradual ladder of upside caps.
+ 
+Implications
+No change needed on our process. The new structure should reduce reliance on a single monthly roll date, create a more gradual ladder of upside caps, and make premium generation more consistent through time. It may improve participation in some sustained rallies or sharp rebounds, but IVVW will still limit upside and retain substantially all equity downside.
+ 
+see less
+Reply in thread
+Jane Bai
+Friday 5:31 PM
+Sweeping Slider Preferences on F1
+A few weeks ago, I ran the F1 customstrategy setup across an (11 x 11) grid of incomePreference = [0:0.1;1] and altsPreference = [0:0.05:0.5], with the asset universe (assetUB) being the union of the Core with Alts & MAI strategies to avoid infeasibility (on the income preference side).
+ 
+The goal being to see how far from the New Frontier model (core with alts in this case) going up/down each of the two sliders takes you. 
+ 
+In a 3D view, the alts and income pref levels are the two bottom axes and the y-axis is the resulting portfolio's tracking error against its target Core with Alts portfolio. 
+ 
+ 
+Initial thoughts:
+Unsuprisingly, since we've calibrated the income preference slider to be MAI at 0.75 and Core with Alts a distinctly separate strategy (income pref at 0), the min TE portfolio in each run sits at income = 0. The alts pref that the min TE portfolio sits at depends on the risk profile. 
+Around incomePref 0.75, the shelf starts to plateau; we saw the same issue when calibrating MAI, and how going above 0.75 didn't significantly tilt more towards yield. The graphs aren't plotting yield as an explicit axes so there could be a case where the higher incomePref really does lead to a much higher yield without adding much to TE against the model, but since incomePref = tilting towards dividend assets in this setup, I would expect to see a steeper TE rather than a shelf here. I could confirm against the actual sweep .mat results, but haven't had time as it wasn't a priority
+2080 is interesting! I think the fact that its equity sleeve is smaller dampens the TE since dividends can only be added to a certain extent (as opposed to income alts)
+
+Looking at this now I see that the setup was very wrong (TE is not a good way to think of incomePref slider impact), but I like the 3D visualization of impact: I'm thinking to modify the setup, and could use ideas/thoughts for this side passion project! 
+see less
+Open 4 replies from Jane Bai and Robert Michaud
+Jane Bai
+Tuesday 10:51 AM
+Using the Core with Alts 6040, yield climbs fast at low income preference values and then flattens as it goes > 0.7 while TE still grows. Looks like at high income preference, alts preference impact is lessened since the high income tilt is going to be dictating asset allocation (dividend ETFs, income alts)
+Robert Michaud
+Tuesday 6:06 PM
+It looks like there's a jump at .15 alts, allowing more yield. Is this unlocking PFF, or just swapping from REITs to something better?
+Jane Bai
+Wednesday 4:16 PM
+The 0.15 alts preference jump seems to be due to way we're setting up the alts constraint. This is the current altspreference nfalib code:
+ 
+%Set Bounds on constraint
+          %TODO The upper bound may need to be calibrated
+          if options.csAltsPreference >= 0.10
+              data.constraintLB(CON_ALTS,1) = options.csAltsPreference - 0.1;
+              data.constraintUB(CON_ALTS,1) = options.csAltsPreference + 0.05;
+          else %Smooth taper to 0 for slider between 0 and 10%
+              data.constraintLB(CON_ALTS,1) = 0;
+              data.constraintUB(CON_ALTS,1) = 1.5*options.csAltsPreference;
+          end
+ 
+ 
+At altspref = 0.1, the total alts (income + alt alts) never goes above 0.11 regardless of the incomepref level. Its technical UB is 0.15 (code)
+ 
+ 
+And at altspref = 0.15, the total alts maxes out around 18% (at income level of 0.4):
+ 
+You can see the charts for each altspref level in the first sheet of the spreadsheet I attached; just change the Selected AltsPref (cell Q1).
+ 
+It looks like as the incomepref increases, income alts (PFFD, ICVT) are replacing alt alts (GLDM, KRBN, KMLM, BTAL, PSP, CEFS) more readily, since those assets can hit a 0% weight at high income levels; but the two REITs are seeing more weight as the incomepref increases. I'm not sure if we're classifying REITs as alt alts or income alts; I'm going to guess the later, but I think they get categorized as alt alts, since they're alts we're using in our core strategies. 
+ 
+I think the biggest issue is that the alts constraint in the mcode appears to apply to alt alts + income alts together, even though the comments say income alts' allocation should not be governed by the alternative slider.
+ 
+Also, increasing altspref raises the MINIMUM required alts but can't force the optimizer to hold more alts beyond that. And it looks like the optimizer only wants to add the amount absolutely required, and that additional alts, like going above the UB, won't help with the income objective. So the minimum total alts outcome in the sweep across incomepref levels clusters closer to the constraint-determined LB as the altspref gets higher:
+ 
+It might be that the LB set by our code rises faster with respect to the altspref than what the optimizer's unconstrained preferred alts allocation at that altspref really is. 
+ 
+see less
+COREWITHALTS 6040 Sweep Alts 0_0.5 Income 0_1.xlsx
+Reply in thread
+has context menu
+Post in channel

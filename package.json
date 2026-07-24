@@ -1,0 +1,15 @@
+{
+  "name": "pm-operations-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "import:sample": "node scripts/import-sample.js",
+    "test": "node test/run-tests.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
