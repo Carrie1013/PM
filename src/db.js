@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { DatabaseSync } from "node:sqlite";
+import Database from "better-sqlite3";
 
 const dataDirectory = path.resolve("data");
 const defaultDatabasePath = path.join(dataDirectory, "pm.db");
@@ -14,9 +14,9 @@ function ensureDataDirectory() {
 function createConnection() {
   ensureDataDirectory();
   const dbPath = process.env.PM_DB_PATH ?? defaultDatabasePath;
-  const db = new DatabaseSync(dbPath);
-  db.exec("PRAGMA journal_mode = WAL;");
-  db.exec("PRAGMA foreign_keys = ON;");
+  const db = new Database(dbPath);
+  db.pragma("journal_mode = WAL");
+  db.pragma("foreign_keys = ON");
   return db;
 }
 
