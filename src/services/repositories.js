@@ -225,6 +225,26 @@ export function upsertTask(db, body) {
   return getWorkItem(db, id);
 }
 
+export function updateTask(db, workItemId, body) {
+  const existing = getWorkItem(db, workItemId);
+  if (!existing) {
+    return null;
+  }
+
+  return upsertTask(db, {
+    id: workItemId,
+    title: body.title ?? existing.title,
+    description: body.description ?? existing.description ?? "",
+    status: body.status ?? existing.status,
+    priority: body.priority ?? existing.priority,
+    dueDate: body.dueDate ?? existing.dueDate ?? null,
+    ownerId: body.ownerId ?? existing.ownerId ?? null,
+    suggestedOwnerId: body.suggestedOwnerId ?? existing.suggestedOwnerId ?? null,
+    projectId: body.projectId ?? existing.projectId ?? null,
+    blockerFlag: body.blockerFlag ?? existing.blockerFlag
+  });
+}
+
 export function recordAssignmentDecision(db, workItemId, body) {
   const now = nowIso();
   const existing = getWorkItem(db, workItemId);
@@ -323,10 +343,51 @@ export function listPeople(db) {
 
 export function listProjects(db) {
   return db.prepare(`
-    SELECT id, name, summary, status, phase
+    SELECT id, name, summary, status, phase, progress_percent, important_updates
     FROM projects
     ORDER BY name
-  `).all();
+  `).all().map((row) => ({
+    id: row.id,
+    name: row.name,
+    summary: row.summary,
+    status: row.status,
+    phase: row.phase,
+    progressPercent: row.progress_percent,
+    importantUpdates: row.important_updates
+  }));
+}
+
+export function updateProject(db, projectId, body) {
+  const existing = db.prepare("SELECT * FROM projects WHERE id = ?").get(projectId);
+  if (!existing) {
+    return null;
+  }
+
+  const progressPercent = Math.max(0, Math.min(100, Number(body.progressPercent ?? existing.progress_percent ?? 0)));
+  const now = nowIso();
+
+  db.prepare(`
+    UPDATE projects
+    SET name = @name,
+        summary = @summary,
+        status = @status,
+        phase = @phase,
+        progress_percent = @progress_percent,
+        important_updates = @important_updates,
+        updated_at = @updated_at
+    WHERE id = @id
+  `).run({
+    id: projectId,
+    name: body.name ?? existing.name,
+    summary: body.summary ?? existing.summary ?? "",
+    status: body.status ?? existing.status,
+    phase: body.phase ?? existing.phase,
+    progress_percent: progressPercent,
+    important_updates: body.importantUpdates ?? existing.important_updates ?? "",
+    updated_at: now
+  });
+
+  return listProjects(db).find((project) => project.id === projectId);
 }
 
 export function listCalendarEntries(db) {
@@ -434,11 +495,16 @@ export function getDashboardPayload(db) {
   const projectProgress = projects.map((project) => {
     const linked = tasks.filter((task) => task.project_id === project.id);
     const done = linked.filter((task) => task.status === "done").length;
+    const derivedProgress = linked.length === 0 ? 0 : Math.round((done / linked.length) * 100);
+    const progressPercent = project.progressPercent || derivedProgress;
     return {
       id: project.id,
       name: project.name,
       status: project.status,
       phase: project.phase,
+      summary: project.summary,
+      progressPercent,
+      importantUpdates: project.importantUpdates,
       totalTasks: linked.length,
       doneTasks: done,
       openTasks: linked.length - done
@@ -526,6 +592,7 @@ function mapTask(task) {
     projectName: task.project_name,
     blockerFlag: Boolean(task.blocker_flag),
     confidence: task.confidence,
-    sourceExcerpt: task.source_excerpt
+    sourceExcerpt: task.source_excerpt,
+    lastActivityAt: task.last_activity_at
   };
 }

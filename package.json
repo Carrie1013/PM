@@ -6,11 +6,18 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
+    "build": "vite build",
     "import:sample": "node scripts/import-sample.js",
     "test": "node test/run-tests.js"
   },
   "dependencies": {
+    "@vitejs/plugin-react": "^6.0.4",
     "better-sqlite3": "^12.11.1",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "lucide-react": "^1.27.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "typescript": "^7.0.2",
+    "vite": "^8.1.5"
   }
 }

@@ -17,6 +17,8 @@ import {
   listReviewInbox,
   rejectReviewItem,
   recordAssignmentDecision,
+  updateProject,
+  updateTask,
   upsertTask
 } from "./services/repositories.js";
 
@@ -100,6 +102,22 @@ export function createApp() {
       return res.status(404).json({ error: "Task not found" });
     }
     return res.json(item);
+  });
+
+  app.patch("/api/tasks/:id", (req, res) => {
+    const item = updateTask(db, req.params.id, req.body);
+    if (!item) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+    return res.json(item);
+  });
+
+  app.patch("/api/projects/:id", (req, res) => {
+    const project = updateProject(db, req.params.id, req.body);
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+    return res.json(project);
   });
 
   app.post("/api/logs/daily", (req, res) => {

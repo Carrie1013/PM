@@ -44,6 +44,8 @@ export function initializeDatabase(db) {
       summary TEXT,
       status TEXT NOT NULL DEFAULT 'active',
       phase TEXT NOT NULL DEFAULT 'execution',
+      progress_percent INTEGER NOT NULL DEFAULT 0,
+      important_updates TEXT NOT NULL DEFAULT '',
       target_start_date TEXT,
       target_end_date TEXT,
       pm_owner_id TEXT,
@@ -161,6 +163,16 @@ export function initializeDatabase(db) {
       FOREIGN KEY (linked_work_item_id) REFERENCES work_items(id)
     );
   `);
+
+  ensureColumn(db, "projects", "progress_percent", "INTEGER NOT NULL DEFAULT 0");
+  ensureColumn(db, "projects", "important_updates", "TEXT NOT NULL DEFAULT ''");
+}
+
+function ensureColumn(db, tableName, columnName, definition) {
+  const columns = db.prepare(`PRAGMA table_info(${tableName})`).all();
+  if (!columns.some((column) => column.name === columnName)) {
+    db.exec(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${definition}`);
+  }
 }
 
 export function createDatabase() {
